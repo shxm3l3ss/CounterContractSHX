@@ -244,7 +244,7 @@ const deployedContracts = {
   sepolia: {
     CounterContract: {
       address:
-        "0x5fb9d213228cdb60328078aec875a2f7127de53db816815baa76f28280da38c",
+        "0x69a5f0327727de258e041de79c526700fe458e19fdae9333ecb3bdc369ef6ff",
       abi: [
         {
           type: "impl",
