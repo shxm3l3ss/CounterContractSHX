@@ -1,61 +1,40 @@
-import Link from "next/link";
-import Image from "next/image";
-import { ConnectedAddress } from "~~/components/ConnectedAddress";
+"use client";
+
+import CounterValue from "~~/components/CounterValue";
+import IncreaseCounterButton from "~~/components/IncreaseCounter";
+import DecreaseCounterButton from "~~/components/DecreaseCounter";
+import SetCounterForm from "~~/components/SetCounter";
+import EventsList from "~~/components/EventsList";
+import ResetCounter from "~~/components/ResetCounter";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-stark/useScaffoldReadContract";
 
 const Home = () => {
+  const { data, isLoading } = useScaffoldReadContract({
+    contractName: "CounterContract",
+    functionName: "get_counter",
+  });
+
+  let counterValue: bigint | undefined;
+  if (typeof data === "bigint") {
+    counterValue = data;
+  } else if (typeof data === "number") {
+    counterValue = BigInt(data);
+  }
+
+
   return (
     <div className="flex items-center flex-col grow pt-10">
-      <div className="px-5">
-        <h1 className="text-center">
-          <span className="block text-2xl mb-2">Welcome to</span>
-          <span className="block text-4xl font-bold">Scaffold-Stark 2</span>
-        </h1>
-        <ConnectedAddress />
-        <p className="text-center text-lg">
-          Edit your smart contract{" "}
-          <code className="bg-underline italic text-base font-bold max-w-full break-words break-all inline-block">
-            your_contract.cairo
-          </code>{" "}
-          in{" "}
-          <code className="bg-underline italic text-base font-bold max-w-full break-words break-all inline-block">
-            packages/snfoundry/contracts/src
-          </code>
-        </p>
+      <CounterValue value={counterValue} isLoading={isLoading} />
+      <div className="h-3" />
+      <div className="flex flex-row items-center gap-3 flex-wrap">
+        <IncreaseCounterButton />
+        <DecreaseCounterButton counterValue={counterValue} />
+        <ResetCounter />
       </div>
-
-      <div className="bg-container grow w-full mt-16 px-8 py-12">
-        <div className="flex justify-center items-center gap-12 flex-col sm:flex-row">
-          <div className="flex flex-col bg-base-100 relative text-[12px] px-10 py-10 text-center items-center max-w-xs rounded-3xl border border-gradient">
-            <div className="trapeze"></div>
-            <Image
-              src="/debug-icon.svg"
-              alt="icon"
-              width={26}
-              height={30}
-            ></Image>
-            <p>
-              Tinker with your smart contract using the{" "}
-              <Link href="/debug" passHref className="link">
-                Debug Contracts
-              </Link>{" "}
-              tab.
-            </p>
-          </div>
-          <div className="flex flex-col bg-base-100 relative text-[12px] px-10 py-10 text-center items-center max-w-xs rounded-3xl border border-gradient">
-            <div className="trapeze"></div>
-            <Image
-              src="/explorer-icon.svg"
-              alt="icon"
-              width={20}
-              height={32}
-            ></Image>
-            <p>
-              Play around with Multiwrite transactions using
-              useScaffoldMultiWrite() hook
-            </p>
-          </div>
-        </div>
-      </div>
+      <div className="h-3" />
+      <SetCounterForm />
+      <div className="h-6" />
+      <EventsList />
     </div>
   );
 };

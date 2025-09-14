@@ -5,101 +5,51 @@
 
 const deployedContracts = {
   devnet: {
-    YourContract: {
+    CounterContract: {
       address:
-        "0x1a2542704c7588b9c5eb86c9a1b2391b93b77b67694268b74db51097031839d",
+        "0x6604c4631ea1d620d8f6e1800d6ee1384a2be69b76de278efea23dcbf4cb8cf",
       abi: [
         {
           type: "impl",
-          name: "YourContractImpl",
-          interface_name: "contracts::YourContract::IYourContract",
-        },
-        {
-          type: "struct",
-          name: "core::byte_array::ByteArray",
-          members: [
-            {
-              name: "data",
-              type: "core::array::Array::<core::bytes_31::bytes31>",
-            },
-            {
-              name: "pending_word",
-              type: "core::felt252",
-            },
-            {
-              name: "pending_word_len",
-              type: "core::integer::u32",
-            },
-          ],
-        },
-        {
-          type: "struct",
-          name: "core::integer::u256",
-          members: [
-            {
-              name: "low",
-              type: "core::integer::u128",
-            },
-            {
-              name: "high",
-              type: "core::integer::u128",
-            },
-          ],
-        },
-        {
-          type: "enum",
-          name: "core::option::Option::<core::integer::u256>",
-          variants: [
-            {
-              name: "Some",
-              type: "core::integer::u256",
-            },
-            {
-              name: "None",
-              type: "()",
-            },
-          ],
-        },
-        {
-          type: "enum",
-          name: "core::bool",
-          variants: [
-            {
-              name: "False",
-              type: "()",
-            },
-            {
-              name: "True",
-              type: "()",
-            },
-          ],
+          name: "CounterImpl",
+          interface_name: "contracts::counter::ICounter",
         },
         {
           type: "interface",
-          name: "contracts::YourContract::IYourContract",
+          name: "contracts::counter::ICounter",
           items: [
             {
               type: "function",
-              name: "greeting",
+              name: "get_counter",
               inputs: [],
               outputs: [
                 {
-                  type: "core::byte_array::ByteArray",
+                  type: "core::integer::u32",
                 },
               ],
               state_mutability: "view",
             },
             {
               type: "function",
-              name: "set_greeting",
+              name: "increase_counter",
+              inputs: [],
+              outputs: [],
+              state_mutability: "external",
+            },
+            {
+              type: "function",
+              name: "decrease_counter",
+              inputs: [],
+              outputs: [],
+              state_mutability: "external",
+            },
+            {
+              type: "function",
+              name: "set_counter",
               inputs: [
                 {
-                  name: "new_greeting",
-                  type: "core::byte_array::ByteArray",
-                },
-                {
-                  name: "amount_strk",
-                  type: "core::option::Option::<core::integer::u256>",
+                  name: "new_value",
+                  type: "core::integer::u32",
                 },
               ],
               outputs: [],
@@ -107,21 +57,10 @@ const deployedContracts = {
             },
             {
               type: "function",
-              name: "withdraw",
+              name: "reset_counter",
               inputs: [],
               outputs: [],
               state_mutability: "external",
-            },
-            {
-              type: "function",
-              name: "premium",
-              inputs: [],
-              outputs: [
-                {
-                  type: "core::bool",
-                },
-              ],
-              state_mutability: "view",
             },
           ],
         },
@@ -171,8 +110,61 @@ const deployedContracts = {
           name: "constructor",
           inputs: [
             {
+              name: "init_value",
+              type: "core::integer::u32",
+            },
+            {
               name: "owner",
               type: "core::starknet::contract_address::ContractAddress",
+            },
+          ],
+        },
+        {
+          type: "enum",
+          name: "contracts::counter::CounterContract::ChangeReason",
+          variants: [
+            {
+              name: "Increase",
+              type: "()",
+            },
+            {
+              name: "Decrease",
+              type: "()",
+            },
+            {
+              name: "Reset",
+              type: "()",
+            },
+            {
+              name: "Set",
+              type: "()",
+            },
+          ],
+        },
+        {
+          type: "event",
+          name: "contracts::counter::CounterContract::CounterChanged",
+          kind: "struct",
+          members: [
+            {
+              name: "caller",
+              type: "core::starknet::contract_address::ContractAddress",
+              kind: "key",
+            },
+            {
+              name: "old_value",
+              type: "core::integer::u32",
+              kind: "data",
+            },
+            {
+              name: "new_value",
+              type: "core::integer::u32",
+              kind: "data",
+            },
+            {
+              name: "reason",
+              type: "contracts::counter::CounterContract::ChangeReason",
+              kind: "data",
             },
           ],
         },
@@ -229,235 +221,72 @@ const deployedContracts = {
         },
         {
           type: "event",
-          name: "contracts::YourContract::YourContract::GreetingChanged",
-          kind: "struct",
-          members: [
-            {
-              name: "greeting_setter",
-              type: "core::starknet::contract_address::ContractAddress",
-              kind: "key",
-            },
-            {
-              name: "new_greeting",
-              type: "core::byte_array::ByteArray",
-              kind: "key",
-            },
-            {
-              name: "premium",
-              type: "core::bool",
-              kind: "data",
-            },
-            {
-              name: "value",
-              type: "core::option::Option::<core::integer::u256>",
-              kind: "data",
-            },
-          ],
-        },
-        {
-          type: "event",
-          name: "contracts::YourContract::YourContract::Event",
+          name: "contracts::counter::CounterContract::Event",
           kind: "enum",
           variants: [
+            {
+              name: "CounterChanged",
+              type: "contracts::counter::CounterContract::CounterChanged",
+              kind: "nested",
+            },
             {
               name: "OwnableEvent",
               type: "openzeppelin_access::ownable::ownable::OwnableComponent::Event",
               kind: "flat",
             },
-            {
-              name: "GreetingChanged",
-              type: "contracts::YourContract::YourContract::GreetingChanged",
-              kind: "nested",
-            },
           ],
         },
       ],
       classHash:
-        "0x5e4c766477764df946dcce9b0d2c865468882ac572c0d3767aeb98d23cbe74b",
-    },
-  },
-  mainnet: {
-    Multicall: {
-      address:
-        "0x7ca5ccfeb2e4d6e13e9382d70042712f1f736c003f3a40243d9a397a7317251",
-      abi: [
-        {
-          type: "impl",
-          name: "MulticallImpl",
-          interface_name: "contracts::multicall::IMulticall",
-        },
-        {
-          type: "struct",
-          name: "core::array::Span::<core::starknet::contract_address::ContractAddress>",
-          members: [
-            {
-              name: "snapshot",
-              type: "@core::array::Array::<core::starknet::contract_address::ContractAddress>",
-            },
-          ],
-        },
-        {
-          type: "struct",
-          name: "core::array::Span::<core::felt252>",
-          members: [
-            {
-              name: "snapshot",
-              type: "@core::array::Array::<core::felt252>",
-            },
-          ],
-        },
-        {
-          type: "struct",
-          name: "core::array::Span::<core::array::Span::<core::felt252>>",
-          members: [
-            {
-              name: "snapshot",
-              type: "@core::array::Array::<core::array::Span::<core::felt252>>",
-            },
-          ],
-        },
-        {
-          type: "interface",
-          name: "contracts::multicall::IMulticall",
-          items: [
-            {
-              type: "function",
-              name: "call_contracts",
-              inputs: [
-                {
-                  name: "contracts",
-                  type: "core::array::Span::<core::starknet::contract_address::ContractAddress>",
-                },
-                {
-                  name: "entry_point_selectors",
-                  type: "core::array::Span::<core::felt252>",
-                },
-                {
-                  name: "calldata",
-                  type: "core::array::Span::<core::array::Span::<core::felt252>>",
-                },
-              ],
-              outputs: [
-                {
-                  type: "core::array::Array::<core::array::Span::<core::felt252>>",
-                },
-              ],
-              state_mutability: "view",
-            },
-          ],
-        },
-        {
-          type: "constructor",
-          name: "constructor",
-          inputs: [],
-        },
-        {
-          type: "event",
-          name: "contracts::multicall::Multicall::Event",
-          kind: "enum",
-          variants: [],
-        },
-      ],
-      classHash:
-        "0x67be8d0979b1012f4222674cb81e3a0413e45e16897b8d7c650ae84ba4a3f23",
+        "0xd8d2f2db26dfd5873ea5410f18dc7a01aa942742a262c1f82925b22ce28fb7",
     },
   },
   sepolia: {
-    YourContract: {
+    CounterContract: {
       address:
-        "0x62eb9272c7523ee445d223bae15b5b44a79c3fdbb5216d3412534a47bcc5255",
+        "0x5fb9d213228cdb60328078aec875a2f7127de53db816815baa76f28280da38c",
       abi: [
         {
           type: "impl",
-          name: "YourContractImpl",
-          interface_name: "contracts::YourContract::IYourContract",
-        },
-        {
-          type: "struct",
-          name: "core::byte_array::ByteArray",
-          members: [
-            {
-              name: "data",
-              type: "core::array::Array::<core::bytes_31::bytes31>",
-            },
-            {
-              name: "pending_word",
-              type: "core::felt252",
-            },
-            {
-              name: "pending_word_len",
-              type: "core::integer::u32",
-            },
-          ],
-        },
-        {
-          type: "struct",
-          name: "core::integer::u256",
-          members: [
-            {
-              name: "low",
-              type: "core::integer::u128",
-            },
-            {
-              name: "high",
-              type: "core::integer::u128",
-            },
-          ],
-        },
-        {
-          type: "enum",
-          name: "core::option::Option::<core::integer::u256>",
-          variants: [
-            {
-              name: "Some",
-              type: "core::integer::u256",
-            },
-            {
-              name: "None",
-              type: "()",
-            },
-          ],
-        },
-        {
-          type: "enum",
-          name: "core::bool",
-          variants: [
-            {
-              name: "False",
-              type: "()",
-            },
-            {
-              name: "True",
-              type: "()",
-            },
-          ],
+          name: "CounterImpl",
+          interface_name: "contracts::counter::ICounter",
         },
         {
           type: "interface",
-          name: "contracts::YourContract::IYourContract",
+          name: "contracts::counter::ICounter",
           items: [
             {
               type: "function",
-              name: "greeting",
+              name: "get_counter",
               inputs: [],
               outputs: [
                 {
-                  type: "core::byte_array::ByteArray",
+                  type: "core::integer::u32",
                 },
               ],
               state_mutability: "view",
             },
             {
               type: "function",
-              name: "set_greeting",
+              name: "increase_counter",
+              inputs: [],
+              outputs: [],
+              state_mutability: "external",
+            },
+            {
+              type: "function",
+              name: "decrease_counter",
+              inputs: [],
+              outputs: [],
+              state_mutability: "external",
+            },
+            {
+              type: "function",
+              name: "set_counter",
               inputs: [
                 {
-                  name: "new_greeting",
-                  type: "core::byte_array::ByteArray",
-                },
-                {
-                  name: "amount_strk",
-                  type: "core::option::Option::<core::integer::u256>",
+                  name: "new_value",
+                  type: "core::integer::u32",
                 },
               ],
               outputs: [],
@@ -465,21 +294,10 @@ const deployedContracts = {
             },
             {
               type: "function",
-              name: "withdraw",
+              name: "reset_counter",
               inputs: [],
               outputs: [],
               state_mutability: "external",
-            },
-            {
-              type: "function",
-              name: "premium",
-              inputs: [],
-              outputs: [
-                {
-                  type: "core::bool",
-                },
-              ],
-              state_mutability: "view",
             },
           ],
         },
@@ -529,8 +347,61 @@ const deployedContracts = {
           name: "constructor",
           inputs: [
             {
+              name: "init_value",
+              type: "core::integer::u32",
+            },
+            {
               name: "owner",
               type: "core::starknet::contract_address::ContractAddress",
+            },
+          ],
+        },
+        {
+          type: "enum",
+          name: "contracts::counter::CounterContract::ChangeReason",
+          variants: [
+            {
+              name: "Increase",
+              type: "()",
+            },
+            {
+              name: "Decrease",
+              type: "()",
+            },
+            {
+              name: "Reset",
+              type: "()",
+            },
+            {
+              name: "Set",
+              type: "()",
+            },
+          ],
+        },
+        {
+          type: "event",
+          name: "contracts::counter::CounterContract::CounterChanged",
+          kind: "struct",
+          members: [
+            {
+              name: "caller",
+              type: "core::starknet::contract_address::ContractAddress",
+              kind: "key",
+            },
+            {
+              name: "old_value",
+              type: "core::integer::u32",
+              kind: "data",
+            },
+            {
+              name: "new_value",
+              type: "core::integer::u32",
+              kind: "data",
+            },
+            {
+              name: "reason",
+              type: "contracts::counter::CounterContract::ChangeReason",
+              kind: "data",
             },
           ],
         },
@@ -587,51 +458,24 @@ const deployedContracts = {
         },
         {
           type: "event",
-          name: "contracts::YourContract::YourContract::GreetingChanged",
-          kind: "struct",
-          members: [
-            {
-              name: "greeting_setter",
-              type: "core::starknet::contract_address::ContractAddress",
-              kind: "key",
-            },
-            {
-              name: "new_greeting",
-              type: "core::byte_array::ByteArray",
-              kind: "key",
-            },
-            {
-              name: "premium",
-              type: "core::bool",
-              kind: "data",
-            },
-            {
-              name: "value",
-              type: "core::option::Option::<core::integer::u256>",
-              kind: "data",
-            },
-          ],
-        },
-        {
-          type: "event",
-          name: "contracts::YourContract::YourContract::Event",
+          name: "contracts::counter::CounterContract::Event",
           kind: "enum",
           variants: [
+            {
+              name: "CounterChanged",
+              type: "contracts::counter::CounterContract::CounterChanged",
+              kind: "nested",
+            },
             {
               name: "OwnableEvent",
               type: "openzeppelin_access::ownable::ownable::OwnableComponent::Event",
               kind: "flat",
             },
-            {
-              name: "GreetingChanged",
-              type: "contracts::YourContract::YourContract::GreetingChanged",
-              kind: "nested",
-            },
           ],
         },
       ],
       classHash:
-        "0x5e4c766477764df946dcce9b0d2c865468882ac572c0d3767aeb98d23cbe74b",
+        "0xd8d2f2db26dfd5873ea5410f18dc7a01aa942742a262c1f82925b22ce28fb7",
     },
   },
 } as const;
